@@ -60,31 +60,6 @@ It enables jobseekers to analyze their resumes, identify skill gaps, and get job
 ### Authentication
 - JSON Web Tokens (JWT)
 
----
-
-## 📂 Project Structure
-hirelens-ai-job-portal/
-│
-├── backend/
-│   ├── config/            # Database configuration
-│   ├── controllers/       # Business logic
-│   ├── middleware/        # Auth, role, upload middleware
-│   ├── models/            # MongoDB schemas
-│   ├── routes/            # API routes
-│   └── server.js          # Entry point
-│
-├── frontend/
-│   ├── public/            # Static assets
-│   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Application pages
-│   │   ├── services/      # API calls (Axios)
-│   │   ├── utils/         # Helper functions
-│   │   └── main.jsx       # App entry
-│   └── index.html
-│
-└── README.md
-
 
 ---
 
