@@ -1,44 +1,34 @@
-name: Deploy to EC2
+name: Deploy HireLens to EC2
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
       - name: Deploy on EC2
-        run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            set -e
-
-            cd ${{ secrets.APP_DIR }}
-
-            git fetch origin main
-            git reset --hard origin/main
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /var/www/app
+            git pull origin main
 
             cd backend
             npm install
-            pm2 restart app || pm2 start server.js --name app
-            cd ..
+            pm2 restart hirelens-backend --update-env || pm2 start server.js --name hirelens-backend
 
-            cd frontend
+            cd ../frontend
             npm install
             npm run build
-            cd ..
+
+            sudo rm -rf /var/www/hirelens/*
+            sudo cp -r dist/* /var/www/hirelens/
 
             sudo systemctl restart nginx
-            pm2 save
-          EOF
